@@ -1,32 +1,20 @@
-//
-//  SwitchyApp.swift
-//  Switchy
-//
-//  Created by Cayden M. Ching on 8/14/25.
-//
-
 import SwiftUI
-import SwiftData
 
 @main
 struct SwitchyApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
+    @StateObject private var audioManager = AudioManager()
+    @StateObject private var dockManager = DockManager()
+    @StateObject private var nowPlayingManager = NowPlayingManager()
+    @StateObject private var keyboardCleanerManager = KeyboardCleanerManager()
 
     var body: some Scene {
-        WindowGroup {
-            ContentView()
+        MenuBarExtra("Switchy", systemImage: "power.circle.fill") {
+            SwitchyContentView()
+                .environmentObject(audioManager)
+                .environmentObject(dockManager)
+                .environmentObject(nowPlayingManager)
+                .environmentObject(keyboardCleanerManager)
         }
-        .modelContainer(sharedModelContainer)
+        .menuBarExtraStyle(.window)
     }
 }

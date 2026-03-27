@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		5FC855F52F75E9B100C00692 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5FC855F42F75E9B100C00692 /* Info.plist */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		5F9CE7AD2E4EDDFE0018FC5E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,8 @@
 		5F9CE79C2E4EDDFD0018FC5E /* Switchy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Switchy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F9CE7AC2E4EDDFE0018FC5E /* SwitchyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwitchyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F9CE7B62E4EDDFE0018FC5E /* SwitchyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwitchyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5FC855F42F75E9B100C00692 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5FC855FA2F77092D00C00692 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -79,6 +85,8 @@
 				5F9CE7AF2E4EDDFE0018FC5E /* SwitchyTests */,
 				5F9CE7B92E4EDDFE0018FC5E /* SwitchyUITests */,
 				5F9CE79D2E4EDDFD0018FC5E /* Products */,
+				5FC855F42F75E9B100C00692 /* Info.plist */,
+				5FC855FA2F77092D00C00692 /* .gitignore */,
 			);
 			sourceTree = "<group>";
 		};
@@ -212,6 +220,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5FC855F52F75E9B100C00692 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -402,6 +411,8 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -430,6 +441,8 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

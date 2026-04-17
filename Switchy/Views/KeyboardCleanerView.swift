@@ -59,7 +59,7 @@ struct KeyboardCleanerView: View {
     }
 
     private var activeState: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 10) {
             Image(systemName: "keyboard.fill")
                 .font(.system(size: 28))
                 .foregroundColor(.orange)
@@ -68,18 +68,25 @@ struct KeyboardCleanerView: View {
                 .font(.system(size: 14, weight: .semibold))
                 .foregroundColor(.orange)
 
-            Text("Press  Space + Tab + R  to unlock")
-                .font(.system(size: 11, weight: .medium))
-                .padding(.horizontal, 10)
-                .padding(.vertical, 4)
-                .background(
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.primary.opacity(0.06))
-                )
-
             Text("All keyboard input is currently blocked")
                 .font(.caption2)
                 .foregroundColor(.secondary)
+
+            Button {
+                keyboardCleanerManager.deactivate()
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "lock.open.fill")
+                        .font(.system(size: 11))
+                    Text("Unlock Keyboard")
+                        .font(.system(size: 12, weight: .medium))
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 6)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.small)
+            .tint(.orange)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
@@ -116,14 +123,6 @@ struct KeyboardCleanerView: View {
             .buttonStyle(.borderedProminent)
             .controlSize(.small)
             .disabled(!keyboardCleanerManager.hasAccessibilityPermission)
-
-            HStack(spacing: 4) {
-                Image(systemName: "info.circle")
-                    .font(.system(size: 9))
-                Text("Unlock with  Space + Tab + R")
-                    .font(.system(size: 10))
-            }
-            .foregroundStyle(.tertiary)
         }
     }
 }

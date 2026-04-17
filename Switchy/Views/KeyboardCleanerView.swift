@@ -18,6 +18,12 @@ struct KeyboardCleanerView: View {
         .padding(.bottom, 8)
         .onAppear {
             keyboardCleanerManager.checkAccessibilityPermission()
+            if !keyboardCleanerManager.hasAccessibilityPermission {
+                keyboardCleanerManager.startPollingAccessibilityPermission()
+            }
+        }
+        .onDisappear {
+            keyboardCleanerManager.stopPollingAccessibilityPermission()
         }
     }
 

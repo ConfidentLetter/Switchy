@@ -2,16 +2,44 @@
 //  SwitchyTests.swift
 //  SwitchyTests
 //
-//  Created by Cayden M. Ching on 8/14/25.
-//
 
 import Testing
 @testable import Switchy
 
-struct SwitchyTests {
+@MainActor
+struct KeyboardCleanerManagerTests {
 
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
+    @Test func initialStateIsInactive() async throws {
+        let manager = KeyboardCleanerManager()
+        #expect(manager.isActive == false)
     }
 
+    @Test func startPollingSetsPollingFlag() async throws {
+        let manager = KeyboardCleanerManager()
+        manager.startPollingAccessibilityPermission()
+        #expect(manager.isPollingPermission == true)
+        manager.stopPollingAccessibilityPermission()
+    }
+
+    @Test func stopPollingClearsPollingFlag() async throws {
+        let manager = KeyboardCleanerManager()
+        manager.startPollingAccessibilityPermission()
+        manager.stopPollingAccessibilityPermission()
+        #expect(manager.isPollingPermission == false)
+    }
+
+    @Test func startPollingIsIdempotent() async throws {
+        let manager = KeyboardCleanerManager()
+        manager.startPollingAccessibilityPermission()
+        manager.startPollingAccessibilityPermission()
+        #expect(manager.isPollingPermission == true)
+        manager.stopPollingAccessibilityPermission()
+        #expect(manager.isPollingPermission == false)
+    }
+
+    @Test func deactivateIsSafeWhenNotActive() async throws {
+        let manager = KeyboardCleanerManager()
+        manager.deactivate()
+        #expect(manager.isActive == false)
+    }
 }

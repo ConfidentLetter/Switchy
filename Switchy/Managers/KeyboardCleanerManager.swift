@@ -32,13 +32,15 @@ class KeyboardCleanerManager: ObservableObject {
     func startPollingAccessibilityPermission() {
         stopPollingAccessibilityPermission()
         isPollingPermission = true
-        permissionPollTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+        let timer = Timer(timeInterval: 1.0, repeats: true) { [weak self] _ in
             guard let self = self else { return }
             self.checkAccessibilityPermission()
             if self.hasAccessibilityPermission {
                 self.stopPollingAccessibilityPermission()
             }
         }
+        RunLoop.main.add(timer, forMode: .common)
+        permissionPollTimer = timer
     }
 
     func stopPollingAccessibilityPermission() {

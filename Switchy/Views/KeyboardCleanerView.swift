@@ -44,6 +44,12 @@ struct KeyboardCleanerView: View {
             .font(.system(size: 11))
             .buttonStyle(.borderedProminent)
             .controlSize(.small)
+
+            Button("Refresh Permission") {
+                keyboardCleanerManager.checkAccessibilityPermission()
+            }
+            .font(.system(size: 10))
+            .buttonStyle(.link)
         }
         .padding(10)
         .background(
@@ -62,14 +68,20 @@ struct KeyboardCleanerView: View {
                 .font(.system(size: 14, weight: .semibold))
                 .foregroundColor(.orange)
 
-            Text("Press  Space + Tab + R  to unlock")
-                .font(.system(size: 11, weight: .medium))
-                .padding(.horizontal, 10)
-                .padding(.vertical, 4)
-                .background(
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.primary.opacity(0.06))
-                )
+            Button {
+                keyboardCleanerManager.deactivate()
+            } label: {
+                HStack(spacing: 5) {
+                    Image(systemName: "lock.open.fill")
+                        .font(.system(size: 11))
+                    Text("Unlock Keyboard")
+                        .font(.system(size: 12, weight: .medium))
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 6)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.small)
 
             Text("All keyboard input is currently blocked")
                 .font(.caption2)
@@ -111,13 +123,6 @@ struct KeyboardCleanerView: View {
             .controlSize(.small)
             .disabled(!keyboardCleanerManager.hasAccessibilityPermission)
 
-            HStack(spacing: 4) {
-                Image(systemName: "info.circle")
-                    .font(.system(size: 9))
-                Text("Unlock with  Space + Tab + R")
-                    .font(.system(size: 10))
-            }
-            .foregroundStyle(.tertiary)
         }
     }
 }

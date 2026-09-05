@@ -7,30 +7,62 @@ class KeyboardCleanerManager: ObservableObject {
 
     private var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
-    private var heldKeys: Set<CGKeyCode> = []
-
-    // Key codes for the unlock combo
-    private let spaceKeyCode: CGKeyCode = 49
-    private let tabKeyCode: CGKeyCode = 48
-    private let rKeyCode: CGKeyCode = 15
+    private var accessibilityPermissionTimer: Timer?
+    private var appActivationObserver: NSObjectProtocol?
 
     init() {
         checkAccessibilityPermission()
+        startAccessibilityPermissionMonitoring()
+        appActivationObserver = NotificationCenter.default.addObserver(
+            forName: NSApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.checkAccessibilityPermission()
+        }
+    }
+
+    deinit {
+        accessibilityPermissionTimer?.invalidate()
+        if let appActivationObserver {
+            NotificationCenter.default.removeObserver(appActivationObserver)
+        }
     }
 
     // MARK: - Accessibility Permission
 
     func checkAccessibilityPermission() {
-        hasAccessibilityPermission = AXIsProcessTrusted()
+        let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue(): false] as CFDictionary
+        let isTrusted = AXIsProcessTrustedWithOptions(options)
+
+        let update = { [weak self] in
+            guard let self, self.hasAccessibilityPermission != isTrusted else { return }
+            self.hasAccessibilityPermission = isTrusted
+        }
+
+        if Thread.isMainThread {
+            update()
+        } else {
+            DispatchQueue.main.async(execute: update)
+        }
+    }
+
+    private func startAccessibilityPermissionMonitoring() {
+        accessibilityPermissionTimer?.invalidate()
+        accessibilityPermissionTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] timer in
+            guard let self else {
+                timer.invalidate()
+                return
+            }
+
+            self.checkAccessibilityPermission()
+        }
     }
 
     func requestAccessibilityPermission() {
         let options = [kAXTrustedCheckOptionPrompt.takeRetainedValue(): true] as CFDictionary
         AXIsProcessTrustedWithOptions(options)
-        // Re-check after a delay to update UI
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            self?.checkAccessibilityPermission()
-        }
+        startAccessibilityPermissionMonitoring()
     }
 
     // MARK: - Keyboard Blocking
@@ -39,8 +71,6 @@ class KeyboardCleanerManager: ObservableObject {
         guard !isActive else { return }
         checkAccessibilityPermission()
         guard hasAccessibilityPermission else { return }
-
-        heldKeys.removeAll()
 
         let eventMask: CGEventMask = (1 << CGEventType.keyDown.rawValue)
             | (1 << CGEventType.keyUp.rawValue)
@@ -86,7 +116,6 @@ class KeyboardCleanerManager: ObservableObject {
         }
         eventTap = nil
         runLoopSource = nil
-        heldKeys.removeAll()
 
         DispatchQueue.main.async {
             self.isActive = false
@@ -101,28 +130,6 @@ class KeyboardCleanerManager: ObservableObject {
             if let tap = eventTap {
                 CGEvent.tapEnable(tap: tap, enable: true)
             }
-            return Unmanaged.passUnretained(event)
-        }
-
-        let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
-
-        switch type {
-        case .keyDown:
-            heldKeys.insert(keyCode)
-        case .keyUp:
-            heldKeys.remove(keyCode)
-        case .flagsChanged:
-            // Track modifier keys too if needed
-            break
-        default:
-            break
-        }
-
-        // Check for unlock combo: Space + Tab + R
-        if heldKeys.contains(spaceKeyCode) &&
-           heldKeys.contains(tabKeyCode) &&
-           heldKeys.contains(rKeyCode) {
-            deactivate()
             return Unmanaged.passUnretained(event)
         }
 
